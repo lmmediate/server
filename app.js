@@ -1,19 +1,7 @@
 const express = require('express');
-const Sequelize = require('sequelize');
+const path = require('path');
+const models = require(path.join(__dirname, 'models'));
 
-
-const sequelize = new Sequelize('postgres://hes:shopdiscounts@localhost:5432/easysales',
-  {
-    define: {
-      timestamps: false
-    }
-  });
-
-const Account = sequelize.import(__dirname + "/models/item")
-
-Account.findAll().then(users => {
-  users.forEach(u => console.log(u.name));
-})
 
 const app = express();
 const port = 8080;
