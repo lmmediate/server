@@ -16,23 +16,28 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING,
       allowNull: false
     },
-    old_price: {
+    oldPrice: {
+      field: 'old_price',
       type: DataTypes.DOUBLE,
       allowNull: true
     },
-    new_price: {
+    newPrice: {
+      field: 'new_price',
       type: DataTypes.DOUBLE,
       allowNull: true
     },
-    date_in: {
+    dateIn: {
+      field: 'date_in',
       type: DataTypes.DATEONLY,
       allowNull: true
     },
-    date_out: {
+    dateOut: {
+      field: 'date_out',
       type: DataTypes.DATEONLY,
       allowNull: true
     },
-    crawl_date: {
+    crawlDate: {
+      field: 'crawl_date',
       type: DataTypes.DATEONLY,
       allowNull: true
     },
@@ -44,7 +49,8 @@ module.exports = function(sequelize, DataTypes) {
       type: "BYTEA",
       allowNull: true
     },
-    image_url: {
+    imageUrl: {
+      field: 'image_url',
       type: DataTypes.STRING,
       allowNull: true
     },
