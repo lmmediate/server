@@ -11,6 +11,11 @@ const port = 8080;
 app.use(bodyParser.json());
 app.use('/api', sales);
 app.use('/api', auth);
+app.use(function (err, req, res, next) {
+  if (err.name === 'UnauthorizedError') {
+    res.status(401).send('invalid token.');
+  }
+});
 
 app.listen(port, function() {
   console.log('Server started on port ' + port);
