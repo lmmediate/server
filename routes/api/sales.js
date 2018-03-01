@@ -4,7 +4,7 @@ const path = require('path');
 const { Op } = require('sequelize')
 const models = require(path.join(__dirname, '../..', 'models'));
 
-router.get('/sales', (req, res) => {
+router.get('/', (req, res) => {
   models.Item.findAll({
     where: {
       date_in: {
@@ -20,7 +20,7 @@ router.get('/sales', (req, res) => {
     });
 });
 
-router.post('/sales', (req, res) => {
+router.post('/', (req, res) => {
   var sample = {
     name: req.body.name,
     category: req.body.category,
