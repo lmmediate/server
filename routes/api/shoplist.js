@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const path = require('path');
 const { Op } = require('sequelize')
-const models = require(path.join(__dirname, '../..', 'models'));
+const models = require('../../models');
 
 
 // var check = function(req, res, next) {

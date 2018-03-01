@@ -1,11 +1,10 @@
 const express = require('express');
-const path = require('path');
-const models = require(path.join(__dirname, 'models'));
-const sales = require(path.join(__dirname, 'routes', 'api', 'sales'));
 const bodyParser = require('body-parser');
+const jwt = require('express-jwt');
+
+const sales = require('./routes/api/sales');
 const auth = require('./routes/auth');
 const shoplist = require('./routes/api/shoplist');
-const jwt = require('express-jwt');
 
 const app = express();
 const port = 8080;
