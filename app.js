@@ -10,6 +10,8 @@ const app = express();
 const port = 8080;
 const verifyToken = jwt({secret: 'sssecrettt'});
 
+app.use(express.static('../web-app'));
+
 app.use(bodyParser.json());
 app.use('/auth', auth);
 app.use('/api/sales', sales);
