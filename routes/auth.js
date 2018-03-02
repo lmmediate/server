@@ -14,7 +14,7 @@ router.post('/login', (req, res) => {
   })
     .then(account => {
       if(account) {
-        jwt.sign({user: account.username}, secret, (err, token) => {
+        jwt.sign({username: account.username}, secret, (err, token) => {
           res.send(token);
         });
       } else {

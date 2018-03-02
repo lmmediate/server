@@ -3,15 +3,30 @@ const router = express.Router();
 const { Op } = require('sequelize')
 const models = require('../../models');
 
-
-// var check = function(req, res, next) {
-//   console.log(req.headers['authorization']);
-//   next();
-// }
-
 router.get('/', (req, res) => {
-  console.log('-------' + JSON.stringify( req.user));
-  res.status(200).send('OK');
+  models.Account.findOne({
+    where: {
+      username: req.user.username
+    }
+  })
+    .then(user => {
+      return user.getItems();
+    })
+    .then(items => {
+      res.json(items);
+    });
+});
+
+router.post('/:item_id', (req, res) => {
+  var itemId = req.params['item_id'];
+  models.Account.findOne({ where: { username: req.user.username } })
+    .then(user => {
+      models.Item.findOne({ where: { id: itemId } })
+        .then(item => {
+          user.addItem(item);
+          res.sendStatus(200);
+        });
+    })
 });
 
 module.exports = router;

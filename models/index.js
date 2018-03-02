@@ -12,6 +12,9 @@ const Item = sequelize.import(path.join(__dirname, 'item'));
 const Account = sequelize.import(path.join(__dirname, 'account'));
 const ShopList = sequelize.import(path.join(__dirname, 'shoplist'));
 
+Item.belongsToMany(Account, { through: ShopList });
+Account.belongsToMany(Item, { through: ShopList });
+
 module.exports.Item = Item;
 module.exports.Account = Account;
 module.exports.ShopList = ShopList;
