@@ -6,10 +6,10 @@ const models = require('../../models');
 router.get('/', (req, res) => {
   models.Item.findAll({
     where: {
-      date_in: {
+      dateIn: {
         [Op.lte]: new Date() 
       },
-      date_out: {
+      dateOut: {
         [Op.gte]: new Date()
       }
     }
@@ -20,7 +20,9 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-  var sample = {
+  console.log(req.body);
+
+  var where = {
     name: req.body.name,
     category: req.body.category,
     oldPrice: req.body.oldPrice,
@@ -28,19 +30,42 @@ router.post('/', (req, res) => {
     dateIn: req.body.dateIn,
     dateOut: req.body.dateOut,
     condition: req.body.condition,
-    image: req.body.image,
+    // image: req.body.image,
     imageUrl: req.body.imageUrl,
     discount: req.body.discount
   };
 
+  // make a copy of where object
+  var defaults = Object.assign({}, where); 
+  defaults.crawlDate = req.body.crawlDate;
+
   models.Item.findOrCreate({
-    where: sample,
-    defaults: sample 
+    where: where,
+    defaults: defaults 
   })
     .spread((item, created) => {
       // true if a new object was created and false if not
-      console.log(created);
+      console.log(item.name + ', created: ' + created);
       res.json(item);
+    });
+});
+
+router.get('/info', (req, res) => {
+  var info = { itemsPerPage: 30 };
+  models.Item.count({
+    where: {
+      dateIn: {
+        [Op.lte]: new Date() 
+      },
+      dateOut: {
+        [Op.gte]: new Date()
+      }
+    }
+  })
+    .then(count => {
+      info.itemCount = count;
+      info.numPages = Math.ceil(count / info.itemsPerPage);
+      res.json(info);
     });
 });
 
