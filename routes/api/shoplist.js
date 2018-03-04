@@ -6,7 +6,7 @@ const models = require('../../models');
 router.get('/', (req, res) => {
   models.Account.findOne({
     where: {
-      username: req.user.username
+      id: req.user.id
     }
   })
     .then(user => {
@@ -19,14 +19,27 @@ router.get('/', (req, res) => {
 
 router.post('/:item_id', (req, res) => {
   var itemId = req.params['item_id'];
-  models.Account.findOne({ where: { username: req.user.username } })
+  var userId = req.user.id;
+  models.Account.findOne({ where: { id: userId } })
     .then(user => {
       models.Item.findOne({ where: { id: itemId } })
         .then(item => {
           user.addItem(item);
           res.sendStatus(200);
         });
-    })
+    });
+});
+
+router.delete('/:item_id', (req, res) => {
+  var itemId = req.params['item_id'];
+  var userId = req.user.id;
+  models.ShopList.destroy({
+    where: {
+      accountId: userId,
+      itemId: itemId
+    }
+  });
+  res.sendStatus(200);
 });
 
 module.exports = router;
