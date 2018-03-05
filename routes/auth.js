@@ -21,7 +21,7 @@ router.post('/login', (req, res) => {
           res.send(token);
         });
       } else {
-        res.sendStatus(403);
+        res.status(401).send('Wrong username/password.');
       }
     });
 });

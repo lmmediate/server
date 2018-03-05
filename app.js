@@ -17,10 +17,11 @@ app.use('/auth', auth);
 app.use('/api/sales', sales);
 app.use('/api/shoplist', verifyToken, shoplist);
 app.use(function (err, req, res, next) {
-  res.status(500).send(err.message);
-  // if (err.name === 'UnauthorizedError') {
-  //   res.status(401).send('invalid token.');
-  // }
+  if (err.name === 'UnauthorizedError') {
+    res.status(401).send('Invalid or missing token.');
+  } else {
+    res.status(500).send(err.message);
+  }
 });
 
 app.listen(port, function() {
