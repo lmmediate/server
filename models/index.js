@@ -1,5 +1,4 @@
 const Sequelize = require('sequelize');
-const path = require('path');
 
 const sequelize = new Sequelize('postgres://hes:shopdiscounts@localhost:5432/easysales',
   {
@@ -8,12 +7,14 @@ const sequelize = new Sequelize('postgres://hes:shopdiscounts@localhost:5432/eas
     }
   });
 
-const Item = sequelize.import(path.join(__dirname, 'item'));
-const Account = sequelize.import(path.join(__dirname, 'account'));
-const ShopList = sequelize.import(path.join(__dirname, 'shoplist'));
+const Item = sequelize.import('./item');
+const Account = sequelize.import('./account');
+const ShopList = sequelize.import('./shoplist');
+const CustomItem = sequelize.import('./custom_item');
 
 Item.belongsToMany(Account, { through: ShopList });
 Account.belongsToMany(Item, { through: ShopList });
+Account.hasMany(CustomItem, { as: 'CustomItems' });
 
 module.exports.Item = Item;
 module.exports.Account = Account;
