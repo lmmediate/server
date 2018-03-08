@@ -39,16 +39,8 @@ router.post('/add/', (req, res) => {
   } else if(!itemId && customItemName) {
     models.Account.findOne({ where: { id: userId } })
       .then(user => {
-
-        // TODO: find out why addCustomItem causes
-        // table update instead of insert
-        //
-        // user.addCustomItem(customItemName);
-
-        models.CustomItem.create({accountId: userId, item: customItemName})
-          .then(item => res.json(item))
-          .catch(err => res.status(500).send(err.message));
-        
+        user.createCustomItem({item: customItemName})
+          .then(item => res.json(item));
       });
   } else {
     res.status(500).send('Missing query params.');
