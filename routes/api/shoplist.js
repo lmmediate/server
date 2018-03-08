@@ -50,13 +50,25 @@ router.post('/add/', (req, res) => {
 router.delete('/delete', (req, res) => {
   var userId = req.user.id;
   var itemId = req.query['id'];
-  models.ShopList.destroy({
-    where: {
-      accountId: userId,
-      itemId: itemId
-    }
-  })
-    .then(() => res.sendStatus(200));
+  var customItemId = req.query['customid'];
+
+  console.log(customItemId);
+
+  if(!customItemId && itemId) {
+    models.Account.findOne({ where: { id: userId } })
+      .then(user => {
+        user.removeItem(itemId)
+          .then(() => res.sendStatus(200));
+      });
+  } else if(!itemId && customItemId) {
+    models.Account.findOne({ where: { id: userId } })
+      .then(user => {
+        user.removeCustomItems(customItemId)
+          .then(() => res.sendStatus(200));
+      });
+  } else {
+    res.status(500).send('Missing query params.');
+  }
 });
 
 module.exports = router;

@@ -4,12 +4,12 @@ module.exports = function(sequelize, DataTypes) {
   return sequelize.define('custom_item', {
     item: {
       type: DataTypes.STRING,
-      allowNull: false,
+      // allowNull: false,
     },
     accountId: {
       type: DataTypes.INTEGER,
       field: 'account_id',
-      allowNull: false,
+      // allowNull: false,
       references: {
         model: 'account',
         key: 'id'
