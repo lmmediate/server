@@ -15,8 +15,11 @@ const CustomItem = sequelize.import('./custom_item');
 Item.belongsToMany(Account, { through: ShopList });
 Account.belongsToMany(Item, { through: ShopList });
 Account.hasMany(CustomItem, { as: 'CustomItems' });
+CustomItem.belongsTo(Account);
+
 
 module.exports.Item = Item;
 module.exports.Account = Account;
 module.exports.ShopList = ShopList;
+module.exports.CustomItem = CustomItem;
 

@@ -21,29 +21,50 @@ router.get('/', (req, res) => {
     })
 });
 
-router.post('/:item_id', (req, res) => {
-  var itemId = req.params['item_id'];
+router.post('/add/', (req, res) => {
   var userId = req.user.id;
-  models.Account.findOne({ where: { id: userId } })
-    .then(user => {
-      models.Item.findOne({ where: { id: itemId } })
-        .then(item => {
-          user.addItem(item);
-          res.sendStatus(200);
-        });
-    });
+
+  var itemId = req.query['id'];
+  var customItemName = req.query['custom'];
+
+  if(!customItemName && itemId) {
+    models.Account.findOne({ where: { id: userId } })
+      .then(user => {
+        models.Item.findOne({ where: { id: itemId } })
+          .then(item => {
+            user.addItem(item);
+            res.sendStatus(200);
+          });
+      });
+  } else if(!itemId && customItemName) {
+    models.Account.findOne({ where: { id: userId } })
+      .then(user => {
+
+        // TODO: find out why addCustomItem causes
+        // table update instead of insert
+        //
+        // user.addCustomItem(customItemName);
+
+        models.CustomItem.create({accountId: userId, item: customItemName})
+          .then(item => res.json(item))
+          .catch(err => res.status(500).send(err.message));
+        
+      });
+  } else {
+    res.status(500).send('Missing query params.');
+  }
 });
 
-router.delete('/:item_id', (req, res) => {
-  var itemId = req.params['item_id'];
+router.delete('/delete', (req, res) => {
   var userId = req.user.id;
+  var itemId = req.query['id'];
   models.ShopList.destroy({
     where: {
       accountId: userId,
       itemId: itemId
     }
-  });
-  res.sendStatus(200);
+  })
+    .then(() => res.sendStatus(200));
 });
 
 module.exports = router;
