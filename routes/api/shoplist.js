@@ -4,17 +4,21 @@ const { Op } = require('sequelize')
 const models = require('../../models');
 
 router.get('/', (req, res) => {
+  var shoplist = {};
   models.Account.findOne({
     where: {
       id: req.user.id
     }
   })
     .then(user => {
-      return user.getItems();
+      user.getItems().then(items => {
+        shoplist.items = items.map(i => i.toJSON());
+        user.getCustomItems().then(items => {
+          shoplist.customItems = items.map(i => i.toJSON());
+          res.json(shoplist);
+        });
+      });
     })
-    .then(items => {
-      res.json(items);
-    });
 });
 
 router.post('/:item_id', (req, res) => {
