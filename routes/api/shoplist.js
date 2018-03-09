@@ -2,6 +2,28 @@ const express = require('express');
 const router = express.Router();
 const { Op } = require('sequelize')
 const models = require('../../models');
+const Promise = require('bluebird');
+
+function applyMatchingItems(item) {
+  return models.Item.findAll({
+    where: {
+      dateIn: {
+        [Op.lte]: new Date() 
+      },
+      dateOut: {
+        [Op.gte]: new Date()
+      },
+      name: {
+        [Op.iLike]: '%' + item.item + '%'
+      }
+    }
+  })
+    .then(items => {
+      item = item.toJSON();
+      item.matchingItems = items.map(i => i.toJSON());
+      return item;
+    });
+}
 
 router.get('/', (req, res) => {
   var shoplist = {};
@@ -11,17 +33,25 @@ router.get('/', (req, res) => {
     }
   })
     .then(user => {
-      user.getItems().then(items => {
-        shoplist.items = items.map(i => i.toJSON());
-        user.getCustomItems().then(items => {
-          shoplist.customItems = items.map(i => i.toJSON());
-          res.json(shoplist);
+      user.getItems()
+        .then(items => {
+          shoplist.items = items.map(item => item.toJSON());
+
+          user.getCustomItems()
+            .then(customItems => {
+              Promise.map(customItems, item => {
+                return applyMatchingItems(item);
+              })
+                .then(i => {
+                  shoplist.customItems = i;
+                  res.json(shoplist); 
+                });
+            });
         });
-      });
     })
 });
 
-router.post('/add/', (req, res) => {
+router.post('/add', (req, res) => {
   var userId = req.user.id;
 
   var itemId = req.query['id'];
@@ -40,7 +70,10 @@ router.post('/add/', (req, res) => {
     models.Account.findOne({ where: { id: userId } })
       .then(user => {
         user.createCustomItem({item: customItemName})
-          .then(item => res.json(item));
+          .then(item => {
+            applyMatchingItems(item)
+              .then(a => res.json(a));
+          });
       });
   } else {
     res.status(500).send('Missing query params.');
@@ -51,8 +84,6 @@ router.delete('/delete', (req, res) => {
   var userId = req.user.id;
   var itemId = req.query['id'];
   var customItemId = req.query['customid'];
-
-  console.log(customItemId);
 
   if(!customItemId && itemId) {
     models.Account.findOne({ where: { id: userId } })
