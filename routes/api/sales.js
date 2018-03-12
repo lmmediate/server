@@ -69,4 +69,15 @@ router.get('/info', (req, res) => {
     });
 });
 
+router.get('/categories', (req, res) => {
+  models.Item.findAll({
+    attributes: ['category'],
+    group: ['category']
+  })
+    .then(categories => {
+      var plain = categories.map(i => i.category);
+      res.json(plain);
+    });
+});
+
 module.exports = router;
