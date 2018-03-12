@@ -71,6 +71,14 @@ router.get('/info', (req, res) => {
 
 router.get('/categories', (req, res) => {
   models.Item.findAll({
+    where: {
+      dateIn: {
+        [Op.lte]: new Date() 
+      },
+      dateOut: {
+        [Op.gte]: new Date()
+      }
+    },
     attributes: ['category'],
     group: ['category']
   })
