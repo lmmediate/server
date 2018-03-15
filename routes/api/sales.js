@@ -3,7 +3,7 @@ const router = express.Router();
 const { Op } = require('sequelize')
 const models = require('../../models');
 
-router.get('/shops', (req, res) => {
+router.get('/', (req, res) => {
   models.Item.findAll({
     attributes: ['shop'],
     group: ['shop']
@@ -63,8 +63,11 @@ router.post('/', (req, res) => {
     });
 });
 
-router.get('/info', (req, res) => {
-  var info = { itemsPerPage: 30 };
+router.get('/:shop/info', (req, res) => {
+  var shop = req.params['shop'];
+  // TODO: find shop in db
+  var info = { itemsPerPage: 30, shop: shop };
+
   models.Item.count({
     where: {
       dateIn: {
@@ -78,27 +81,25 @@ router.get('/info', (req, res) => {
     .then(count => {
       info.itemCount = count;
       info.numPages = Math.ceil(count / info.itemsPerPage);
+      return models.Item.findAll({
+        where: {
+          dateIn: {
+            [Op.lte]: new Date() 
+          },
+          dateOut: {
+            [Op.gte]: new Date()
+          }
+        },
+        attributes: ['category'],
+        group: ['category']
+      })
+    })
+    .then(categories => {
+      var plain = categories.map(i => i.category);
+      info.categories = plain;
       res.json(info);
     });
 });
 
-router.get('/categories', (req, res) => {
-  models.Item.findAll({
-    where: {
-      dateIn: {
-        [Op.lte]: new Date() 
-      },
-      dateOut: {
-        [Op.gte]: new Date()
-      }
-    },
-    attributes: ['category'],
-    group: ['category']
-  })
-    .then(categories => {
-      var plain = categories.map(i => i.category);
-      res.json(plain);
-    });
-});
-
 module.exports = router;
+

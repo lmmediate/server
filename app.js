@@ -14,7 +14,7 @@ app.use(express.static('../web-app'));
 
 app.use(bodyParser.json());
 app.use('/auth', auth);
-app.use('/api/sales', sales);
+app.use('/api/shops', sales);
 app.use('/api/shoplist', verifyToken, shoplist);
 app.use(function (err, req, res, next) {
   if (err.name === 'UnauthorizedError') {
