@@ -3,7 +3,20 @@ const router = express.Router();
 const { Op } = require('sequelize')
 const models = require('../../models');
 
-router.get('/', (req, res) => {
+router.get('/shops', (req, res) => {
+  models.Item.findAll({
+    attributes: ['shop'],
+    group: ['shop']
+  })
+    .then(shops => {
+      var plain = shops.map(i => i.shop);
+      res.json(plain);
+    });
+});
+
+router.get('/:shop', (req, res) => {
+  var shop = req.params['shop'];
+
   models.Item.findAll({
     where: {
       dateIn: {
@@ -11,7 +24,8 @@ router.get('/', (req, res) => {
       },
       dateOut: {
         [Op.gte]: new Date()
-      }
+      },
+      shop: shop
     }
   })
     .then(items => {
@@ -20,8 +34,6 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-  console.log(req.body);
-
   var where = {
     name: req.body.name,
     category: req.body.category,
@@ -32,7 +44,8 @@ router.post('/', (req, res) => {
     condition: req.body.condition,
     // image: req.body.image,
     imageUrl: req.body.imageUrl,
-    discount: req.body.discount
+    discount: req.body.discount,
+    shop: req.body.discount
   };
 
   // make a copy of where object

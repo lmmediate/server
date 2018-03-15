@@ -57,6 +57,10 @@ module.exports = function(sequelize, DataTypes) {
     discount: {
       type: DataTypes.STRING,
       allowNull: true
+    },
+    shop: {
+      type: DataTypes.STRING,
+      allowNull: true
     }
   }, {
     tableName: 'item'
