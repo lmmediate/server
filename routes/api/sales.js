@@ -20,7 +20,7 @@ router.get('/:shop', (req, res) => {
   })
     .then(shop => {
       if(shop) {
-        return shop.getItems({
+        shop.getItems({
           where: {
             dateIn: {
               [Op.lte]: new Date() 
@@ -30,13 +30,13 @@ router.get('/:shop', (req, res) => {
             }
           } 
         })
+          .then(items => {
+            res.json(items);
+          });
       } else {
         res.status(404).send('No such shop');
       }
     })
-    .then(items => {
-      res.json(items);
-    });
 });
 
 router.post('/', (req, res) => {
@@ -70,40 +70,43 @@ router.post('/', (req, res) => {
 });
 
 router.get('/:shop/info', (req, res) => {
-  var shop = req.params['shop'];
-  // TODO: find shop in db
-  var info = { itemsPerPage: 30, shop: shop };
+  var shopName = req.params['shop'];
+  var info = { itemsPerPage: 30 };
+  var where = {
+    dateIn: {
+      [Op.lte]: new Date() 
+    },
+    dateOut: {
+      [Op.gte]: new Date()
+    }
+  };
 
-  models.Item.count({
+  models.Shop.findOne({
     where: {
-      dateIn: {
-        [Op.lte]: new Date() 
-      },
-      dateOut: {
-        [Op.gte]: new Date()
-      }
+      alias: shopName
     }
   })
-    .then(count => {
-      info.itemCount = count;
-      info.numPages = Math.ceil(count / info.itemsPerPage);
-      return models.Item.findAll({
-        where: {
-          dateIn: {
-            [Op.lte]: new Date() 
-          },
-          dateOut: {
-            [Op.gte]: new Date()
-          }
-        },
-        attributes: ['category'],
-        group: ['category']
-      })
-    })
-    .then(categories => {
-      var plain = categories.map(i => i.category);
-      info.categories = plain;
-      res.json(info);
+    .then(shop => {
+      if(shop) {
+        info.shop = shop;
+        shop.countItems({where: where})
+          .then(count => {
+            info.itemCount = count;
+            info.numPages = Math.ceil(info.itemCount / info.itemsPerPage);
+          });
+        shop.getItems({
+          where: where, 
+          attributes: ['category'],
+          group: ['category']
+        })
+          .then(categories => {
+            var plain = categories.map(i => i.category);
+            info.categories = plain;
+            res.json(info);
+          });
+      } else {
+        res.status(404).send('No such shop');
+      }
     });
 });
 
