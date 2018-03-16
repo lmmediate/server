@@ -33,22 +33,23 @@ router.get('/', (req, res) => {
     }
   })
     .then(user => {
-      user.getItems()
-        .then(items => {
-          shoplist.items = items.map(item => item.toJSON());
-
-          user.getCustomItems()
-            .then(customItems => {
-              Promise.map(customItems, item => {
-                return applyMatchingItems(item);
-              })
-                .then(i => {
-                  shoplist.customItems = i;
-                  res.json(shoplist); 
-                });
-            });
-        });
+      return Promise.all([
+        user.getItems({
+          include: [{model: models.Shop}]
+        }),
+        user.getCustomItems() 
+      ]); 
     })
+    .then(data => {
+      shoplist.items = data[0].map(item => item.toJSON());
+      return Promise.map(data[1], item => {
+        return applyMatchingItems(item);
+      })
+    })
+    .then(customItems => {
+      shoplist.customItems = customItems;
+      res.json(shoplist);
+    });
 });
 
 router.post('/add', (req, res) => {
