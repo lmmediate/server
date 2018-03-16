@@ -4,13 +4,9 @@ const { Op } = require('sequelize')
 const models = require('../../models');
 
 router.get('/', (req, res) => {
-  models.Item.findAll({
-    attributes: ['shop'],
-    group: ['shop']
-  })
+  models.Shop.findAll()
     .then(shops => {
-      var plain = shops.map(i => i.shop);
-      res.json(plain);
+      res.json(shops);
     });
 });
 
@@ -55,7 +51,7 @@ router.post('/', (req, res) => {
     // image: req.body.image,
     imageUrl: req.body.imageUrl,
     discount: req.body.discount,
-    shop: req.body.discount
+    shopId: req.body.shopId
   };
 
   // make a copy of where object
