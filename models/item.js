@@ -58,9 +58,14 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING,
       allowNull: true
     },
-    shop: {
-      type: DataTypes.STRING,
-      allowNull: true
+    shopId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: 'shop_id',
+      references: {
+        model: 'shop',
+        key: 'id'
+      }
     }
   }, {
     tableName: 'item'

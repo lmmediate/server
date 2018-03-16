@@ -15,21 +15,31 @@ router.get('/', (req, res) => {
 });
 
 router.get('/:shop', (req, res) => {
-  var shop = req.params['shop'];
+  var shopName = req.params['shop'];
 
-  models.Item.findAll({
+  models.Shop.findOne({
     where: {
-      dateIn: {
-        [Op.lte]: new Date() 
-      },
-      dateOut: {
-        [Op.gte]: new Date()
-      },
-      shop: shop
+      alias: shopName
     }
   })
+    .then(shop => {
+      if(shop) {
+        return shop.getItems({
+          where: {
+            dateIn: {
+              [Op.lte]: new Date() 
+            },
+            dateOut: {
+              [Op.gte]: new Date()
+            }
+          } 
+        })
+      } else {
+        res.status(404).send('No such shop');
+      }
+    })
     .then(items => {
-      res.json(items); 
+      res.json(items);
     });
 });
 
