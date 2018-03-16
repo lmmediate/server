@@ -93,12 +93,12 @@ router.get('/:shop/info', (req, res) => {
           .then(count => {
             info.itemCount = count;
             info.numPages = Math.ceil(info.itemCount / info.itemsPerPage);
-          });
-        shop.getItems({
-          where: where, 
-          attributes: ['category'],
-          group: ['category']
-        })
+            return shop.getItems({
+              where: where, 
+              attributes: ['category'],
+              group: ['category']
+            });
+          })
           .then(categories => {
             var plain = categories.map(i => i.category);
             info.categories = plain;
