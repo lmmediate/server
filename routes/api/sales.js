@@ -39,7 +39,7 @@ router.get('/:shop', (req, res) => {
     })
 });
 
-router.post('/', (req, res) => {
+router.post('/', (req, res, next) => {
   var where = {
     name: req.body.name,
     category: req.body.category,
@@ -66,7 +66,8 @@ router.post('/', (req, res) => {
       // true if a new object was created and false if not
       console.log(item.name + ', created: ' + created);
       res.json(item);
-    });
+    })
+    .catch(next);
 });
 
 router.get('/:shop/info', (req, res) => {
