@@ -15,12 +15,13 @@ const Shop = sequelize.import('./shop');
 
 Item.belongsToMany(Account, { through: ShopList });
 Account.belongsToMany(Item, { through: ShopList });
-Account.hasMany(CustomItem, { as: 'CustomItems' });
+Account.hasMany(CustomItem);
 CustomItem.belongsTo(Account);
 Shop.hasMany(Item);
 Item.belongsTo(Shop);
 
 module.exports.Item = Item;
+module.exports.CustomItem = CustomItem;
 module.exports.Account = Account;
 module.exports.ShopList = ShopList;
 module.exports.Shop = Shop;

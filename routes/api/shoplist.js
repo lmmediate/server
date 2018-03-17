@@ -26,29 +26,33 @@ function applyMatchingItems(item) {
 }
 
 router.get('/', (req, res) => {
-  var shoplist = {};
   models.Account.findOne({
+    attributes: ['id', 'username'],
     where: {
       id: req.user.id
-    }
+    },
+    include: [{
+      model: models.Item,
+      through: {attributes: []},
+      attributes: { exclude: ['shopId'] },
+      include: [{
+        model: models.Shop,
+      }]
+    }, {
+      model: models.CustomItem,
+      attributes: ['id', 'item']
+    }]
   })
     .then(user => {
       return Promise.all([
-        user.getItems({
-          include: [{model: models.Shop}]
-        }),
-        user.getCustomItems() 
-      ]); 
+        Promise.resolve(user.toJSON()),
+        Promise.map(user.customItems, applyMatchingItems)
+      ]);
     })
     .then(data => {
-      shoplist.items = data[0].map(item => item.toJSON());
-      return Promise.map(data[1], item => {
-        return applyMatchingItems(item);
-      })
-    })
-    .then(customItems => {
-      shoplist.customItems = customItems;
-      res.json(shoplist);
+      var user = data[0];
+      user.customItems = data[1];
+      res.json(user);
     });
 });
 
