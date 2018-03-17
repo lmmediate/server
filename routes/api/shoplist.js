@@ -16,7 +16,8 @@ function applyMatchingItems(item) {
       name: {
         [Op.iLike]: '%' + item.item + '%'
       }
-    }
+    },
+    include: [{model: models.Shop}]
   })
     .then(items => {
       item = item.toJSON();
