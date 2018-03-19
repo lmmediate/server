@@ -2,6 +2,7 @@
 
 ### `/api/shops` 
 Get info on available shops.
+
 Sample response:
 ```json
 [
@@ -20,8 +21,10 @@ Sample response:
 
 ### `/api/shops/:shop` 
 Get current shop sales.
+
 Parameters:
 * `:shop` -- shop alias from shop info (i.e. "dixy").
+
 Sample response:
 ```json
 [
@@ -39,14 +42,14 @@ Sample response:
         "imageUrl": "https://dixy.ru/upload/iblock/814/2000148579.jpg",
         "discount": "1+1",
         "shopId": 1
-    },
-	...
+    }
 ]
 ``` 
 
 ### `/api/shops/:shop/info`
- Get info on current shop. (I.e. categories, number of items).
- Parameters:
+Get info on current shop. (I.e. categories, number of items).
+
+Parameters:
 * `:shop` -- shop alias from shop info (i.e. "dixy").
 
 Sample response:
