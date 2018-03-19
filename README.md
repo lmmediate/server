@@ -30,7 +30,7 @@ Request type: GET\
 URL parameters:
 * `:shop` -- shop alias from shop info (e.g. "dixy").
 
-Examples:
+Examples:\
 `/api/shops/dixy`
 
 Sample response:
@@ -167,19 +167,16 @@ Query parameters:
 * `id` -- id of an item, which will be added to shopping list.
 * `custom` -- custom item name, which will be added to shopping list.
 
-Examples:
+Examples:\
 `/api/shoplist/add?id=737`\
 `/api/shoplist/add?custom=вода`
 
 This is a **secured** endpoint, so that you need to obtain
-a JWT token. Authentication is described in the section below.
+a JWT token. See Authentication section. 
 
 Sample response:
-```json
-{
-  "TODO": "TODO"
-}
-```
+* Status: 200 'OK' if an item was successfully added to shopping list
+* Status: 404 'No such item' if there is no such item in a database
 
 ### `/api/shoplist/delete`
 Delete an item from shopping list for authenticated user.
@@ -189,10 +186,29 @@ Query parameters:
 * `id` -- id of an item, which will be removed to shopping list.
 * `customid` -- id of custom item, which will be removed to shopping list.
 
-Examples:
+Examples:\
 `/api/shoplist/delete?id=737`\
 `/api/shoplist/delete?customid=57`
 
 This is a **secured** endpoint, so that you need to obtain
-a JWT token. Authentication is described in the section below.
+a JWT token. See Authentication section. 
 
+## Authentication
+
+To get a JWT token to access secured endpoints one needs to send a 
+POST request to `/api/auth/login`.
+
+Request type: POST
+
+Sample request body:
+```json
+{
+	"username": "root",
+	"password": "root"
+}
+```
+
+Sample response:
+```
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcm5hbWUiOiJyb290IiwiaWF0IjoxNTIxNDg5MDg0fQ.eyx6jxlIDkY7XVFBvitxFtoY55dqYQ2xbHVVPnJ046c
+```
