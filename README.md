@@ -162,13 +162,37 @@ Sample response:
 ### `/api/shoplist/add`
 Add an item to shopping list for authenticated user.
 
-Request type: POST
+Request type: POST\
 Query parameters:
 * `id` -- id of an item, which will be added to shopping list.
-* `custom` -- id of custom item, which will be added to shopping list.
+* `custom` -- custom item name, which will be added to shopping list.
 
 Examples:
-`/api/shoplist/add?id=737`
+`/api/shoplist/add?id=737`\
 `/api/shoplist/add?custom=вода`
 
+This is a **secured** endpoint, so that you need to obtain
+a JWT token. Authentication is described in the section below.
+
 Sample response:
+```json
+{
+  "TODO": "TODO"
+}
+```
+
+### `/api/shoplist/delete`
+Delete an item from shopping list for authenticated user.
+
+Request type: DELETE\
+Query parameters:
+* `id` -- id of an item, which will be removed to shopping list.
+* `customid` -- id of custom item, which will be removed to shopping list.
+
+Examples:
+`/api/shoplist/delete?id=737`\
+`/api/shoplist/delete?customid=57`
+
+This is a **secured** endpoint, so that you need to obtain
+a JWT token. Authentication is described in the section below.
+
