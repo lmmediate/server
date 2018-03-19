@@ -68,10 +68,11 @@ router.post('/add', (req, res) => {
       .then(user => {
         models.Item.findOne({ where: { id: itemId } })
           .then(item => {
-            return user.addItem(item);
-          })
-          .then(item => {
-            res.json(item);
+            if(item) {
+              user.addItem(item).then(() => res.sendStatus(200));
+            } else {
+              res.status(404).send('No such item');
+            }
           });
       });
   } else if(!itemId && customItemName) {
