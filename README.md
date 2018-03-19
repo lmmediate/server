@@ -1,7 +1,11 @@
-## GET requests
+# Server part for EasySales app
+
+## Sales manipulations
 
 ### `/api/shops` 
 Get info on available shops.
+
+Request type: GET
 
 Sample response:
 ```json
@@ -22,8 +26,12 @@ Sample response:
 ### `/api/shops/:shop` 
 Get current shop sales.
 
-Parameters:
-* `:shop` -- shop alias from shop info (i.e. "dixy").
+Request type: GET\
+URL parameters:
+* `:shop` -- shop alias from shop info (e.g. "dixy").
+
+Examples:
+`/api/shops/dixy`
 
 Sample response:
 ```json
@@ -49,8 +57,12 @@ Sample response:
 ### `/api/shops/:shop/info`
 Get info on current shop. (I.e. categories, number of items).
 
-Parameters:
-* `:shop` -- shop alias from shop info (i.e. "dixy").
+Request type: GET\
+URL parameters:
+* `:shop` -- shop alias from shop info (e.g. "dixy").
+
+Examples:
+`/api/shops/dixy/info`
 
 Sample response:
 ```json
@@ -80,3 +92,83 @@ Sample response:
 }
 ```
 
+## Shopping list manipulations
+
+### `/api/shoplist`
+Get shopping list for authenticated user.
+
+Request type: GET
+
+This is a **secured** endpoint, so that you need to obtain
+a JWT token. Authentication is described in the section below.
+
+Sample response:
+```json
+{
+    "id": 1,
+    "username": "root",
+    "items": [
+        {
+            "id": 606,
+            "name": "Кукуруза сладкая Globus, 400 г/425 мл",
+            "category": "Консервы, соусы",
+            "oldPrice": 53.4,
+            "newPrice": 39.99,
+            "dateIn": "2018-03-15",
+            "dateOut": "2018-03-28",
+            "crawlDate": "2018-03-17",
+            "condition": "-",
+            "image": null,
+            "imageUrl": "https://dixy.ru/upload/iblock/efd/1041027555.jpg",
+            "discount": "-25",
+            "shop": {
+                "id": 1,
+                "alias": "dixy",
+                "name": "Дикси"
+            }
+        }
+    ],
+    "customItems": [
+        {
+            "id": 18,
+            "item": "сок",
+            "matchingItems": [
+                {
+                    "id": 737,
+                    "name": "Нектар Сады Придонья яблоко-тыква с мякотью; яблоко-морковь; яблоко-алыча с мякотью; сок томатный, 1 л",
+                    "category": "Напитки",
+                    "oldPrice": 84.6,
+                    "newPrice": 54.99,
+                    "dateIn": "2018-03-15",
+                    "dateOut": "2018-03-28",
+                    "crawlDate": "2018-03-17",
+                    "condition": "-",
+                    "image": null,
+                    "imageUrl": "https://dixy.ru/upload/iblock/26e/2000223786.jpg",
+                    "discount": "-35",
+                    "shopId": 1,
+                    "shop": {
+                        "id": 1,
+                        "alias": "dixy",
+                        "name": "Дикси"
+                    }
+                }               
+            ]
+        }
+    ]
+}
+```
+
+### `/api/shoplist/add`
+Add an item to shopping list for authenticated user.
+
+Request type: POST
+Query parameters:
+* `id` -- id of an item, which will be added to shopping list.
+* `custom` -- id of custom item, which will be added to shopping list.
+
+Examples:
+`/api/shoplist/add?id=737`
+`/api/shoplist/add?custom=вода`
+
+Sample response:
