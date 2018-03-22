@@ -106,26 +106,31 @@ Sample response:
 ```json
 {
     "id": 1,
-    "username": "root",
-    "items": [
+    "username": "maxim",
+    "shoplists": [
         {
-            "id": 606,
-            "name": "Кукуруза сладкая Globus, 400 г/425 мл",
-            "category": "Консервы, соусы",
-            "oldPrice": 53.4,
-            "newPrice": 39.99,
-            "dateIn": "2018-03-15",
-            "dateOut": "2018-03-28",
-            "crawlDate": "2018-03-17",
-            "condition": "-",
-            "image": null,
-            "imageUrl": "https://dixy.ru/upload/iblock/efd/1041027555.jpg",
-            "discount": "-25",
-            "shop": {
-                "id": 1,
-                "alias": "dixy",
-                "name": "Дикси"
-            }
+            "id": 1,
+            "items": [
+                {
+                    "id": 3318,
+                    "name": "Напиток безалкогольный Рepsi Сola, 1,25 л",
+                    "category": "Напитки",
+                    "oldPrice": 69.5,
+                    "newPrice": 49.99,
+                    "dateIn": "2018-03-12",
+                    "dateOut": "2018-03-18",
+                    "crawlDate": "2018-03-15",
+                    "condition": "-",
+                    "image": null,
+                    "imageUrl": "https://dixy.ru/upload/iblock/4f9/2000019866.jpg",
+                    "discount": "-28",
+                    "shop": {
+                        "id": 1,
+                        "alias": "dixy",
+                        "name": "Дикси"
+                    }
+                }
+            ]
         }
     ],
     "customItems": [
