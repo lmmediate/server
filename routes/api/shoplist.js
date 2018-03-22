@@ -33,11 +33,15 @@ router.get('/', (req, res) => {
       id: req.user.id
     },
     include: [{
-      model: models.Item,
-      through: {attributes: []},
-      attributes: { exclude: ['shopId'] },
+      model: models.ShopList,
+      attributes: { exclude: ['accountId'] },
       include: [{
-        model: models.Shop,
+        model: models.Item,
+        through: {attributes: []},
+        attributes: { exclude: ['shopId'] },
+        include: [{
+          model: models.Shop
+        }]
       }]
     }, {
       model: models.CustomItem,

@@ -2,27 +2,22 @@
 
 module.exports = function(sequelize, DataTypes) {
   return sequelize.define('shoplist', {
-    accountId: {
+    id: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      primaryKey: true,
+      autoIncrement: true
+    },
+    accountId: {
       field: 'account_id',
-      // primaryKey: true,
+      type: DataTypes.INTEGER,
+      allowNull: false,
       references: {
         model: 'account',
         key: 'id'
       }
-    },
-    itemId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      field: 'item_id',
-      references: {
-        model: 'item',
-        key: 'id'
-      }
     }
-  },
-    {
-      tableName: 'shoplist'
-    });
+  }, {
+    tableName: 'shoplist'
+  });
 };

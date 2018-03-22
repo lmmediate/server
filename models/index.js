@@ -10,11 +10,14 @@ const sequelize = new Sequelize('postgres://hes:shopdiscounts@localhost:5432/eas
 const Item = sequelize.import('./item');
 const Account = sequelize.import('./account');
 const ShopList = sequelize.import('./shoplist');
+const ShopListItem = sequelize.import('./shoplist_item');
 const CustomItem = sequelize.import('./custom_item');
 const Shop = sequelize.import('./shop');
 
-Item.belongsToMany(Account, { through: ShopList });
-Account.belongsToMany(Item, { through: ShopList });
+Account.hasMany(ShopList);
+ShopList.belongsTo(Account);
+Item.belongsToMany(ShopList, { through: ShopListItem });
+ShopList.belongsToMany(Item, { through: ShopListItem });
 Account.hasMany(CustomItem);
 CustomItem.belongsTo(Account);
 Shop.hasMany(Item);
@@ -24,5 +27,6 @@ module.exports.Item = Item;
 module.exports.CustomItem = CustomItem;
 module.exports.Account = Account;
 module.exports.ShopList = ShopList;
+module.exports.ShopListItem = ShopListItem;
 module.exports.Shop = Shop;
 
