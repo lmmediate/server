@@ -10,13 +10,9 @@ module.exports = function(sequelize, DataTypes) {
     },
     alias: {
       type: DataTypes.STRING,
-      allowNull: true
     },
     name: {
       type: DataTypes.STRING,
-      allowNull: true
     }
-  }, {
-    tableName: 'shop'
   });
 };
