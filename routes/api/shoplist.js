@@ -14,7 +14,7 @@ function applyMatchingItems(item) {
         [Op.gte]: new Date()
       },
       name: {
-        [Op.iLike]: '%' + item.item + '%'
+        [Op.iLike]: '%' + item.name + '%'
       }
     },
     include: [{model: models.Shop}]
@@ -27,14 +27,60 @@ function applyMatchingItems(item) {
 }
 
 router.get('/', (req, res) => {
+  var preview = (req.query['preview'] === 'true');
+
+  // include shoplist name and id by default
+  var include = [{
+    model: models.ShopList,
+    attributes: ['id', 'name']
+  }];
+
+  // include 'items' and 'customItems' arrays in shoplist
+  // if preview is enabled
+  if(preview) {
+    include[0].include = [{
+      model: models.Item,
+      through: {attributes: []},
+      attributes: ['name'],
+    }, {
+      model: models.CustomItem,
+      attributes: ['name']
+    }]
+  }
+
   models.Account.findOne({
-    attributes: ['id', 'username'],
+    attributes: [],
+    where: {
+      id: req.user.id
+    },
+    include: include 
+  })
+    .then(user => {
+      var shoplists = user.toJSON().shoplists.map(shoplist => {
+        if(shoplist.items) {
+          shoplist.items = shoplist.items.map(i => i.name); 
+        }
+        if(shoplist.customItems) {
+          shoplist.customItems = shoplist.customItems.map(i => i.name);
+        }
+        return shoplist;
+      });
+      res.json(shoplists);
+    });
+});
+
+router.get('/:id', (req, res) => {
+  models.Account.findOne({
+    attributes: [],
     where: {
       id: req.user.id
     },
     include: [{
       model: models.ShopList,
-      attributes: { exclude: ['accountId'] },
+      attributes: ['id', 'name'],
+      where: {
+        id: req.params['id']
+      },
       include: [{
         model: models.Item,
         through: {attributes: []},
@@ -42,22 +88,23 @@ router.get('/', (req, res) => {
         include: [{
           model: models.Shop
         }]
+      }, {
+        model: models.CustomItem,
+        attributes: ['id', 'name']
       }]
-    }, {
-      model: models.CustomItem,
-      attributes: ['id', 'item']
     }]
   })
     .then(user => {
+      var shoplist = user.shoplists.shift();
       return Promise.all([
-        Promise.resolve(user.toJSON()),
-        Promise.map(user.customItems, applyMatchingItems)
+        Promise.resolve(shoplist.toJSON()),
+        Promise.map(shoplist.customItems, applyMatchingItems)
       ]);
     })
     .then(data => {
-      var user = data[0];
-      user.customItems = data[1];
-      res.json(user);
+      var shoplist = data[0];
+      shoplist.customItems = data[1];
+      res.json(shoplist);
     });
 });
 

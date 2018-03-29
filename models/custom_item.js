@@ -2,7 +2,7 @@
 
 module.exports = function(sequelize, DataTypes) {
   return sequelize.define('customItem', {
-    item: {
+    name: {
       type: DataTypes.STRING,
     }
   });

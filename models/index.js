@@ -21,8 +21,8 @@ Account.hasMany(ShopList);
 ShopList.belongsTo(Account);
 Item.belongsToMany(ShopList, { through: ShopListItem });
 ShopList.belongsToMany(Item, { through: ShopListItem });
-Account.hasMany(CustomItem);
-CustomItem.belongsTo(Account);
+ShopList.hasMany(CustomItem);
+CustomItem.belongsTo(ShopList);
 Shop.hasMany(Item);
 Item.belongsTo(Shop);
 
