@@ -4,6 +4,8 @@ const { Op } = require('sequelize')
 const models = require('../../models');
 const Promise = require('bluebird');
 
+// item - plain json object,
+// not sequelize model
 function applyMatchingItems(item) {
   return models.Item.findAll({
     where: {
@@ -20,7 +22,6 @@ function applyMatchingItems(item) {
     include: [{model: models.Shop}]
   })
     .then(items => {
-      item = item.toJSON();
       item.matchingItems = items.map(i => i.toJSON());
       return item;
     });
@@ -67,17 +68,34 @@ router.get('/', (req, res) => {
   })
     .then(user => {
       var shoplists = user.toJSON().shoplists;
-      // display items as plain text 
-      // if preview mode is enabled
-      // ['milk', 'water', ... ]
       if(mode === 'preview') {
+        // display items as plain text 
+        // if preview mode is enabled
+        // ['milk', 'water', ... ]
         shoplists = shoplists.map(shoplist => {
           shoplist.items = shoplist.items.map(i => i.name); 
           shoplist.customItems = shoplist.customItems.map(i => i.name);
           return shoplist;
         });
+        res.json(shoplists);
+      } else if(mode === 'full') {
+        // apply matching items to every
+        // custom item in every shoplist
+        Promise.all([
+          Promise.resolve(shoplists),
+          Promise.all(
+            shoplists.map(shoplist => {
+              return Promise.map(shoplist.customItems, applyMatchingItems);
+            })
+          )])
+          .then(data => {
+            var sh = data[0];
+            sh.customItems = data[1];
+            res.json(sh);
+          });
+      } else {
+        res.json(shoplists);
       }
-      res.json(shoplists);
     });
 });
 
@@ -110,7 +128,7 @@ router.get('/:id', (req, res) => {
       var shoplist = user.shoplists.shift();
       return Promise.all([
         Promise.resolve(shoplist.toJSON()),
-        Promise.map(shoplist.customItems, applyMatchingItems)
+        Promise.map(shoplist.toJSON().customItems, applyMatchingItems)
       ]);
     })
     .then(data => {
@@ -150,7 +168,7 @@ router.post('/:id/add', (req, res) => {
           });
       } else if(!itemId && customItemName) {
         shoplist.createCustomItem({name: customItemName})
-          .then(item => applyMatchingItems(item))
+          .then(item => applyMatchingItems(item.toJSON()))
           .then(a => res.json(a));
       } else {
         res.status(500).send('Missing query params.');
