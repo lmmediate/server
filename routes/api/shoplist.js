@@ -27,7 +27,7 @@ function applyMatchingItems(item) {
 }
 
 router.get('/', (req, res) => {
-  var preview = (req.query['preview'] === 'true');
+  var mode = req.query['mode'];
 
   // include shoplist name and id by default
   var include = [{
@@ -35,16 +35,26 @@ router.get('/', (req, res) => {
     attributes: ['id', 'name']
   }];
 
-  // include 'items' and 'customItems' arrays in shoplist
-  // if preview is enabled
-  if(preview) {
+  // include an 'item' and 'customItem' in shoplist
+  // if full mode is enabled
+  //
+  // include an 'item.name' and 'customItem.name'
+  // if preview mode is enabled
+  if(mode === 'preview') {
     include[0].include = [{
       model: models.Item,
       through: {attributes: []},
-      attributes: ['name'],
+      attributes: ['name']
     }, {
       model: models.CustomItem,
       attributes: ['name']
+    }]
+  } else if (mode === 'full') {
+    include[0].include = [{
+      model: models.Item,
+      through: {attributes: []}
+    }, {
+      model: models.CustomItem
     }]
   }
 
@@ -56,15 +66,17 @@ router.get('/', (req, res) => {
     include: include 
   })
     .then(user => {
-      var shoplists = user.toJSON().shoplists.map(shoplist => {
-        if(shoplist.items) {
+      var shoplists = user.toJSON().shoplists;
+      // display items as plain text 
+      // if preview mode is enabled
+      // ['milk', 'water', ... ]
+      if(mode === 'preview') {
+        shoplists = shoplists.map(shoplist => {
           shoplist.items = shoplist.items.map(i => i.name); 
-        }
-        if(shoplist.customItems) {
           shoplist.customItems = shoplist.customItems.map(i => i.name);
-        }
-        return shoplist;
-      });
+          return shoplist;
+        });
+      }
       res.json(shoplists);
     });
 });
