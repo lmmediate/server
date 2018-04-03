@@ -138,7 +138,7 @@ router.get('/:id', (req, res) => {
     });
 });
 
-router.post('/:id/add', (req, res) => {
+router.post('/:id/additem', (req, res) => {
   var userId = req.user['id'];
   var shoplistId = req.params['id'];
   var itemId = req.query['id'];
@@ -179,7 +179,7 @@ router.post('/:id/add', (req, res) => {
     });
 });
 
-router.delete('/:id/delete', (req, res) => {
+router.delete('/:id/deleteitem', (req, res) => {
   var userId = req.user.id;
   var itemId = req.query['id'];
   var customItemId = req.query['customid'];
@@ -214,7 +214,33 @@ router.delete('/:id/delete', (req, res) => {
   
 });
 
-// TODO: detele shoplist 
-// TODO: create shoplist
+router.delete('/:id', (req, res) => {
+  var shoplistId = req.params['id'];
+  var userId = req.user.id;
+  models.Account.findOne({
+    where: {
+      id: userId
+    }
+  })
+    .then(user => {
+      user.removeShoplist(shoplistId);
+    })
+    .then(() => res.sendStatus(200));
+});
+
+router.post('/', (req, res) => {
+  var userId = req.user.id;
+  var shoplist = req.body;
+
+  models.Account.findOne({
+    where: {
+      id: userId
+    }
+  })
+    .then(user => {
+      return user.createShoplist(shoplist);
+    })
+    .then(data => res.json(data));
+});
 
 module.exports = router;
