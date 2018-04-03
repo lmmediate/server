@@ -247,7 +247,14 @@ router.post('/', (req, res) => {
     .then(user => {
       return user.createShoplist(shoplist);
     })
-    .then(data => res.json(data));
+    .then(data => { 
+      data = data.toJSON();
+      // Attach arrays since they are
+      // required in front-end
+      data.items = [];
+      data.customItems = [];
+      res.json(data)
+    });
 });
 
 module.exports = router;
