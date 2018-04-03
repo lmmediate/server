@@ -30,10 +30,7 @@ Request type: GET\
 URL parameters:
 * `:shop` -- shop alias from shop info (e.g. "dixy").
 
-Examples:\
-`/api/shops/dixy`
-
-Sample response:
+Sample response (`/api/shops/dixy`):
 ```json
 [
     {
@@ -61,10 +58,7 @@ Request type: GET\
 URL parameters:
 * `:shop` -- shop alias from shop info (e.g. "dixy").
 
-Examples:
-`/api/shops/dixy/info`
-
-Sample response:
+Sample response (`/api/shops/dixy/info`):
 ```json
 {
     "itemsPerPage": 30,
@@ -94,77 +88,221 @@ Sample response:
 
 ## Shopping list manipulations
 
-### `/api/shoplist`
-Get shopping list for authenticated user.
+### `/api/shoplist` (GET)
+Get all shopping lists for authenticated user.
 
-Request type: GET
+Request type: GET\
+Query parameters (optional):
+* `mode` - `preview` or `full`.
 
 This is a **secured** endpoint, so that you need to obtain
 a JWT token. Authentication is described in the section below.
 
-Sample response:
+Sample response (`/api/shoplist`):
+```json
+[
+    {
+        "id": 1,
+        "name": "Еда"
+    },
+    {
+        "id": 2,
+        "name": "www"
+    },
+    {
+        "id": 3,
+        "name": "qqq"
+    },
+    {
+        "id": 4,
+        "name": "Напитки"
+    }
+]
+```
+
+Sample response (`/api/shoplist?mode=preview`):
+```json
+[
+    {
+        "id": 1,
+        "name": "Еда",
+        "items": [
+            "Чай Вrooke Вond пакетики 100 пакетиков, 180 г",
+            "Имбирь корень, 1 кг",
+            "Вода минеральная Ессентуки №17; №4, 0,5 л",
+            "Вода питьевая Святой источник газированная; негазированная, 1,5 л",
+            "Курица фермерская для жарки от Оксаны Коржовой 1.6-2кг",
+            "Компот Д из персиков, 580 мл"
+        ],
+        "customItems": [
+            "Привет",
+            "Кирилл",
+            ":)",
+            "Максим",
+            "Здарова",
+            "сок",
+            "томат"
+        ]
+    },
+    {
+        "id": 4,
+        "name": "Напитки",
+        "items": [
+            "Томаты Черри, 250 г",
+            "Чай Вrooke Вond пакетики 100 пакетиков, 180 г",
+            "Перец красный, 1 кг",
+            "Вода питьевая Агуша детская, 330 мл",
+            "Вода минеральная Ессентуки №17; №4, 0,5 л",
+            "Вода питьевая Святой источник газированная; негазированная, 1,5 л",
+            "Конфеты Raffaello с цельным миндальным орехом в кокосовой обсыпке 150г",
+            "Курица фермерская для жарки от Оксаны Коржовой 1.6-2кг"
+        ],
+        "customItems": [
+            "kjk",
+            "lo"
+        ]
+    }
+]
+```
+
+Sample response (`/api/shoplist?mode=full`):
+```json
+[
+    {
+        "id": 1,
+        "name": "Еда",
+        "items": [
+            {
+                "id": 2,
+                "name": "Чай Вrooke Вond пакетики 100 пакетиков, 180 г",
+                "category": "Кофе, чай",
+                "oldPrice": 166.9,
+                "newPrice": 99.99,
+                "dateIn": "2018-03-30",
+                "dateOut": "2018-03-30",
+                "crawlDate": "2018-03-30",
+                "condition": "-",
+                "image": null,
+                "imageUrl": "https://dixy.ru/upload/iblock/728/2000051199.jpg",
+                "discount": "-40",
+                "shopId": 1
+            }
+        ],
+        "customItems": [
+            {
+                "id": 9,
+                "name": "Кирилл",
+                "shoplistId": 1,
+                "matchingItems": [
+                    {
+                        "id": 54661,
+                        "name": "Кирилл Куприянов",
+                        "category": "Разработчики",
+                        "oldPrice": null,
+                        "newPrice": null,
+                        "dateIn": "2018-03-31",
+                        "dateOut": "2018-06-30",
+                        "crawlDate": null,
+                        "condition": null,
+                        "image": null,
+                        "imageUrl": "https://avatars1.githubusercontent.com/u/18150209?s=400&v=4",
+                        "discount": null,
+                        "shopId": 1,
+                        "shop": {
+                            "id": 1,
+                            "alias": "dixy",
+                            "name": "Дикси"
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+]
+```
+
+### `/api/shoplist` (POST)
+Create a shopping list.
+
+Body:
+```json
+{
+  "name": "Name of a shopping list"
+}
+```
+
+This is a **secured** endpoint, so that you need to obtain
+
+Sample reponse:
+```json
+{
+    "id": 5,
+    "name": "Завтрак",
+    "accountId": 2
+}
+```
+
+### `/api/shoplist/:id (GET)`
+Get shopping list by id.
+
+URL parameters:
+* `id` - id of a shopping list
+
+Sample response (`/api/shoplist/1`):
 ```json
 {
     "id": 1,
-    "username": "maxim",
-    "shoplists": [
+    "name": "Еда",
+    "items": [
         {
-            "id": 1,
-            "items": [
-                {
-                    "id": 3318,
-                    "name": "Напиток безалкогольный Рepsi Сola, 1,25 л",
-                    "category": "Напитки",
-                    "oldPrice": 69.5,
-                    "newPrice": 49.99,
-                    "dateIn": "2018-03-12",
-                    "dateOut": "2018-03-18",
-                    "crawlDate": "2018-03-15",
-                    "condition": "-",
-                    "image": null,
-                    "imageUrl": "https://dixy.ru/upload/iblock/4f9/2000019866.jpg",
-                    "discount": "-28",
-                    "shop": {
-                        "id": 1,
-                        "alias": "dixy",
-                        "name": "Дикси"
-                    }
-                }
-            ]
+            "id": 73838,
+            "name": "Компот Д из персиков, 580 мл",
+            "category": "Консервы, соусы",
+            "oldPrice": 137,
+            "newPrice": 99.99,
+            "dateIn": "2018-04-02",
+            "dateOut": "2018-04-08",
+            "crawlDate": "2018-04-02",
+            "condition": "-",
+            "image": null,
+            "imageUrl": "https://dixy.ru/upload/iblock/fe2/2000183687.jpg",
+            "discount": "-27",
+            "shop": {
+                "id": 1,
+                "alias": "dixy",
+                "name": "Дикси"
+            }
         }
-    ],
-    "customItems": [
+  ],
+     "matchingItems": [
         {
-            "id": 18,
-            "item": "сок",
-            "matchingItems": [
-                {
-                    "id": 737,
-                    "name": "Нектар Сады Придонья яблоко-тыква с мякотью; яблоко-морковь; яблоко-алыча с мякотью; сок томатный, 1 л",
-                    "category": "Напитки",
-                    "oldPrice": 84.6,
-                    "newPrice": 54.99,
-                    "dateIn": "2018-03-15",
-                    "dateOut": "2018-03-28",
-                    "crawlDate": "2018-03-17",
-                    "condition": "-",
-                    "image": null,
-                    "imageUrl": "https://dixy.ru/upload/iblock/26e/2000223786.jpg",
-                    "discount": "-35",
-                    "shopId": 1,
-                    "shop": {
-                        "id": 1,
-                        "alias": "dixy",
-                        "name": "Дикси"
-                    }
-                }               
-            ]
+            "id": 155,
+            "name": "Напиток сокосодержащий Любимый земляничное лето; яблоко-вишня-черешня; апельсин-манго-мандарин, 0,95 л",
+            "category": "Напитки",
+            "oldPrice": 66.7,
+            "newPrice": 39.99,
+            "dateIn": "2018-03-26",
+            "dateOut": "2018-04-08",
+            "crawlDate": "2018-03-30",
+            "condition": "-",
+            "image": null,
+            "imageUrl": "https://dixy.ru/upload/iblock/65e/2000159266.jpg",
+            "discount": "-40",
+            "shopId": 1,
+            "shop": {
+                "id": 1,
+                "alias": "dixy",
+                "name": "Дикси"
+            }
         }
     ]
 }
 ```
 
-### `/api/shoplist/add`
+### `/api/shoplist/:id (DELETE)`
+Delete a shopping list with a given id.
+
+### `/api/shoplist/:id/additem`
 Add an item to shopping list for authenticated user.
 
 Request type: POST\
@@ -173,8 +311,8 @@ Query parameters:
 * `custom` -- custom item name, which will be added to shopping list.
 
 Examples:\
-`/api/shoplist/add?id=737`\
-`/api/shoplist/add?custom=вода`
+`/api/shoplist/1/add?id=737`\
+`/api/shoplist/1/add?custom=вода`
 
 This is a **secured** endpoint, so that you need to obtain
 a JWT token. See Authentication section. 
@@ -183,7 +321,7 @@ Sample response:
 * Status: 200 'OK' if an item was successfully added to shopping list
 * Status: 404 'No such item' if there is no such item in a database
 
-### `/api/shoplist/delete`
+### `/api/shoplist/:id/deleteitem`
 Delete an item from shopping list for authenticated user.
 
 Request type: DELETE\
@@ -192,8 +330,8 @@ Query parameters:
 * `customid` -- id of custom item, which will be removed to shopping list.
 
 Examples:\
-`/api/shoplist/delete?id=737`\
-`/api/shoplist/delete?customid=57`
+`/api/shoplist/1/delete?id=737`\
+`/api/shoplist/1/delete?customid=57`
 
 This is a **secured** endpoint, so that you need to obtain
 a JWT token. See Authentication section. 
