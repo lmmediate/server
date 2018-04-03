@@ -7,7 +7,7 @@ const auth = require('./routes/auth');
 const shoplist = require('./routes/api/shoplist');
 
 const app = express();
-const port = 8080;
+const port = 80;
 const verifyToken = jwt({secret: 'sssecrettt'});
 
 app.use(express.static('../web-app'));
