@@ -19,7 +19,10 @@ function applyMatchingItems(item) {
         [Op.iLike]: '%' + item.name + '%'
       }
     },
-    include: [{model: models.Shop}]
+    attributes: { exclude: ['shopId'] },
+    include: [{
+      model: models.Shop,
+    }]
   })
     .then(items => {
       item.matchingItems = items.map(i => i.toJSON());
@@ -53,7 +56,11 @@ router.get('/', (req, res) => {
   } else if (mode === 'full') {
     include[0].include = [{
       model: models.Item,
-      through: {attributes: []}
+      through: {attributes: []},
+      attributes: { exclude: ['shopId'] },
+      include: [{
+        model: models.Shop
+      }]
     }, {
       model: models.CustomItem
     }]

@@ -28,7 +28,11 @@ router.get('/:shop', (req, res) => {
             dateOut: {
               [Op.gte]: new Date()
             }
-          } 
+          },
+          attributes: { exclude: ['shopId'] },
+          include: [{
+            model: models.Shop
+          }]
         })
           .then(items => {
             res.json(items);
