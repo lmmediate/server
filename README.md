@@ -26,9 +26,17 @@ Sample response:
 ### `/api/shops/:shop` 
 Get current shop sales.
 
-Request type: GET\
+Request type: GET
+
 URL parameters:
 * `:shop` -- shop alias from shop info (e.g. "dixy").
+
+Query parameters:
+* `name` -- filter items by name (optional)
+* `category` -- filter items by category (optional)
+
+Example:
+`/api/shops/dixy?name=сок?category=Консервы, соусы`
 
 Sample response (`/api/shops/dixy`):
 ```json
