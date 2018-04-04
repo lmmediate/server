@@ -12,31 +12,43 @@ router.get('/', (req, res) => {
 
 router.get('/:shop', (req, res) => {
   var shopName = req.params['shop'];
+  var category = req.query['category'];
+  var name = req.query['name'];
+
+  var itemWhere = {
+    dateIn: {
+      [Op.lte]: new Date() 
+    },
+    dateOut: {
+      [Op.gte]: new Date()
+    }
+  };
+  if(category) {
+    itemWhere.category = category;
+  }
+  if(name) {
+    itemWhere.name = {
+      [Op.iLike]: `%${name}%`, 
+    }
+  }
 
   models.Shop.findOne({
     where: {
       alias: shopName
-    }
+    },
+    include: [{
+      model: models.Item,
+      required: false,
+      where: itemWhere,
+      attributes: { exclude: ['shopId'] },
+      include: [{
+        model: models.Shop
+      }]
+    }]
   })
     .then(shop => {
       if(shop) {
-        shop.getItems({
-          where: {
-            dateIn: {
-              [Op.lte]: new Date() 
-            },
-            dateOut: {
-              [Op.gte]: new Date()
-            }
-          },
-          attributes: { exclude: ['shopId'] },
-          include: [{
-            model: models.Shop
-          }]
-        })
-          .then(items => {
-            res.json(items);
-          });
+        res.json(shop);
       } else {
         res.status(404).send('No such shop');
       }
