@@ -3,6 +3,17 @@ const router = express.Router();
 const { Op } = require('sequelize')
 const models = require('../../models');
 
+// Pagination
+const ITEMS_PER_PAGE = 30;
+const ACTUAL_ITEMS = {
+  dateIn: {
+    [Op.lte]: new Date() 
+  },
+  dateOut: {
+    [Op.gte]: new Date()
+  }
+};
+
 router.get('/', (req, res) => {
   models.Shop.findAll()
     .then(shops => {
@@ -10,49 +21,53 @@ router.get('/', (req, res) => {
     });
 });
 
-router.get('/:shop', (req, res) => {
-  var shopName = req.params['shop'];
+router.get('/:shopId/categories', (req, res) => {
+  var shopId = req.params['shopId'];
+  var where = Object.assign({shopId: shopId}, ACTUAL_ITEMS); 
+
+  models.Item.findAll({
+    where: where, 
+    attributes: ['category'],
+    group: ['category']
+  })
+    .then(result => {
+      var plain = result.map(i => i.category);
+      res.json(plain);
+    });
+
+});
+
+router.get('/:shopId', (req, res) => {
+  var shopId = req.params['shopId'];
   var category = req.query['category'];
   var name = req.query['name'];
+  var page = req.query['page'] || 1;
 
-  var itemWhere = {
-    dateIn: {
-      [Op.lte]: new Date() 
-    },
-    dateOut: {
-      [Op.gte]: new Date()
-    }
-  };
+  var where = Object.assign({shopId: shopId}, ACTUAL_ITEMS); 
+
   if(category) {
-    itemWhere.category = category;
+    where.category = category;
   }
   if(name) {
-    itemWhere.name = {
+    where.name = {
       [Op.iLike]: `%${name}%`, 
     }
   }
 
-  models.Shop.findOne({
-    where: {
-      alias: shopName
-    },
+  models.Item.findAndCountAll({
+    where: where,
+    // Offset and limit for pagination
+    offset: ITEMS_PER_PAGE * (page - 1),
+    limit: ITEMS_PER_PAGE,
+    attributes: { exclude: ['shopId'] },
     include: [{
-      model: models.Item,
-      required: false,
-      where: itemWhere,
-      attributes: { exclude: ['shopId'] },
-      include: [{
-        model: models.Shop
-      }]
+      model: models.Shop
     }]
   })
-    .then(shop => {
-      if(shop) {
-        res.json(shop.items);
-      } else {
-        res.status(404).send('No such shop');
-      }
-    })
+    .then(result => {
+      result.numPages = Math.ceil(result.count / ITEMS_PER_PAGE);
+      res.json(result);
+    });
 });
 
 router.post('/', (req, res, next) => {
@@ -84,47 +99,6 @@ router.post('/', (req, res, next) => {
       res.json(item);
     })
     .catch(next);
-});
-
-router.get('/:shop/info', (req, res) => {
-  var shopName = req.params['shop'];
-  var info = { itemsPerPage: 30 };
-  var where = {
-    dateIn: {
-      [Op.lte]: new Date() 
-    },
-    dateOut: {
-      [Op.gte]: new Date()
-    }
-  };
-
-  models.Shop.findOne({
-    where: {
-      alias: shopName
-    }
-  })
-    .then(shop => {
-      if(shop) {
-        info.shop = shop;
-        shop.countItems({where: where})
-          .then(count => {
-            info.itemCount = count;
-            info.numPages = Math.ceil(info.itemCount / info.itemsPerPage);
-            return shop.getItems({
-              where: where, 
-              attributes: ['category'],
-              group: ['category']
-            });
-          })
-          .then(categories => {
-            var plain = categories.map(i => i.category);
-            info.categories = plain;
-            res.json(info);
-          });
-      } else {
-        res.status(404).send('No such shop');
-      }
-    });
 });
 
 module.exports = router;
