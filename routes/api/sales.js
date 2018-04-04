@@ -48,7 +48,7 @@ router.get('/:shop', (req, res) => {
   })
     .then(shop => {
       if(shop) {
-        res.json(shop);
+        res.json(shop.items);
       } else {
         res.status(404).send('No such shop');
       }
