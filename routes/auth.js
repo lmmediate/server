@@ -26,4 +26,25 @@ router.post('/login', (req, res) => {
     });
 });
 
+router.post('/register', (req, res, next) => {
+  models.Account.findOne({
+    where: {
+      username: req.body.username,
+    }
+  })
+    .then(user => {
+      if(user) {
+        res.status(500).send('Account already exists.');
+        return;
+      } else {
+        return models.Account.create({
+          username: req.body.username,
+          password: req.body.password
+        })
+      }
+    })
+    .then(() => res.sendStatus(200))
+    .catch(next);
+});
+
 module.exports = router;
