@@ -3,22 +3,18 @@ const router = express.Router();
 const { Op } = require('sequelize')
 const models = require('../../models');
 const Promise = require('bluebird');
+const utils = require('../../utils/utils');
 
 // item - plain json object,
 // not sequelize model
 function applyMatchingItems(item) {
+  var where = utils.actualItemsWhere({
+    name: {
+      [Op.iLike]: '%' + item.name + '%'
+    }
+  });
   return models.Item.findAll({
-    where: {
-      dateIn: {
-        [Op.lte]: new Date() 
-      },
-      dateOut: {
-        [Op.gte]: new Date()
-      },
-      name: {
-        [Op.iLike]: '%' + item.name + '%'
-      }
-    },
+    where: where,
     attributes: { exclude: ['shopId'] },
     include: [{
       model: models.Shop,

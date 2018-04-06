@@ -2,17 +2,10 @@ const express = require('express');
 const router = express.Router();
 const { Op } = require('sequelize')
 const models = require('../../models');
+const utils = require('../../utils/utils');
 
 // Pagination
 const ITEMS_PER_PAGE = 30;
-const ACTUAL_ITEMS = {
-  dateIn: {
-    [Op.lte]: new Date() 
-  },
-  dateOut: {
-    [Op.gte]: new Date()
-  }
-};
 
 router.get('/', (req, res) => {
   models.Shop.findAll()
@@ -23,7 +16,7 @@ router.get('/', (req, res) => {
 
 router.get('/:shopId/categories', (req, res) => {
   var shopId = req.params['shopId'];
-  var where = Object.assign({shopId: shopId}, ACTUAL_ITEMS); 
+  var where = utils.actualItemsWhere({shopId: shopId});
 
   models.Item.findAll({
     where: where, 
@@ -41,9 +34,9 @@ router.get('/:shopId', (req, res) => {
   var shopId = req.params['shopId'];
   var category = req.query['category'];
   var name = req.query['name'];
-  var page = req.query['page'] || 1;
+  var page = +req.query['page'] || 1;
 
-  var where = Object.assign({shopId: shopId}, ACTUAL_ITEMS); 
+  var where = utils.actualItemsWhere({shopId: shopId});
 
   if(category) {
     where.category = category;
