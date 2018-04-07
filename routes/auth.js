@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const models = require('../models');
+const Promise = require('bluebird');
 
 const secret = 'sssecrettt';
 
@@ -27,6 +28,15 @@ router.post('/login', (req, res) => {
 });
 
 router.post('/register', (req, res, next) => {
+  // Synchronous code, simply throw errors
+  if(!req.body.username || !req.body.password) {
+    throw new Error('Empty credentials.');
+  } else if(req.body.username.length < 6) {
+    throw new Error('Username is too short');
+  } else if(req.body.password.length < 6) {
+    throw new Error('Password is too short');
+  }
+  // Asynchronous code, reject promises on error
   models.Account.findOne({
     where: {
       username: req.body.username,
@@ -34,8 +44,7 @@ router.post('/register', (req, res, next) => {
   })
     .then(user => {
       if(user) {
-        res.status(500).send('Account already exists.');
-        return;
+        return  Promise.reject(new Error('Account already exists.'));
       } else {
         return models.Account.create({
           username: req.body.username,
