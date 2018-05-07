@@ -3,7 +3,6 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const models = require('../models');
 const Promise = require('bluebird');
-const CryptoJS = require('crypto-js');
 
 const secret = require('../secret').secret;
 
@@ -11,8 +10,7 @@ router.post('/login', (req, res) => {
   models.Account.findOne({
     where: {
       username: req.body.username,
-      // cast to hex string
-      password: CryptoJS.SHA256(req.body.password) + "" 
+      password: req.body.password
     }
   })
     .then(account => {
@@ -30,6 +28,8 @@ router.post('/login', (req, res) => {
 });
 
 router.post('/register', (req, res, next) => {
+  // TODO: remove this checks,
+  // intead make frontend checks
   // Synchronous code, simply throw errors
   if(!req.body.username || !req.body.password) {
     throw new Error('Empty credentials.');
@@ -59,3 +59,4 @@ router.post('/register', (req, res, next) => {
 });
 
 module.exports = router;
+
