@@ -1,3 +1,6 @@
+# secret key for jwt
+secret.json
+
 # Logs
 logs
 *.log

@@ -3,14 +3,16 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const models = require('../models');
 const Promise = require('bluebird');
+const CryptoJS = require('crypto-js');
 
-const secret = 'sssecrettt';
+const secret = require('../secret').secret;
 
 router.post('/login', (req, res) => { 
   models.Account.findOne({
     where: {
       username: req.body.username,
-      password: req.body.password
+      // cast to hex string
+      password: CryptoJS.SHA256(req.body.password) + "" 
     }
   })
     .then(account => {
