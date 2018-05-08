@@ -8,7 +8,7 @@ const shoplist = require('./routes/api/shoplist');
 
 const app = express();
 const port = 80;
-const verifyToken = jwt({secret: 'sssecrettt'});
+const verifyToken = jwt(require('./secret'));
 
 app.use(express.static('../web-app'));
 
