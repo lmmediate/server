@@ -11,6 +11,7 @@ const port = 80;
 const verifyToken = jwt(require('./secret'));
 
 app.use(express.static('../web-app'));
+app.use('/static', express.static('./static'));
 
 app.use(bodyParser.json());
 app.use('/auth', auth);

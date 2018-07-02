@@ -9,10 +9,13 @@ module.exports = function(sequelize, DataTypes) {
       autoIncrement: true
     },
     alias: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING
     },
     name: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING
+    },
+    imageUrl: {
+      type: DataTypes.STRING
     }
   });
 };
