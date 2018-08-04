@@ -14,6 +14,27 @@ router.get('/', (req, res) => {
     });
 });
 
+router.get('/:shopId/info', (req, res) => {
+  var shopId = req.params['shopId'];
+  var where = utils.actualItemsWhere({shopId: shopId});
+
+  var p1 = models.Shop.find({where: {id: shopId}});
+  var p2 = models.Item.count({where: where});
+  var p3 = models.Item.findAll({
+    where: where, 
+    attributes: ['category'],
+    group: ['category']
+  });
+
+  Promise.all([p1, p2, p3]).then(data => {
+    var response = {};
+    response.shop = data[0];
+    response.numItems = data[1];
+    response.categories =  data[2].map(i => i.category);
+    res.json(response);
+  });
+});
+
 router.get('/:shopId/categories', (req, res) => {
   var shopId = req.params['shopId'];
   var where = utils.actualItemsWhere({shopId: shopId});
