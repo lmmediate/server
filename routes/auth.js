@@ -9,7 +9,7 @@ const secret = require('../secret').secret;
 router.post('/login', (req, res) => { 
   models.Account.findOne({
     where: {
-      username: req.body.username,
+      username: req.body.username.toLowerCase(),
       password: req.body.password
     }
   })
@@ -41,7 +41,7 @@ router.post('/register', (req, res, next) => {
   // Asynchronous code, reject promises on error
   models.Account.findOne({
     where: {
-      username: req.body.username,
+      username: req.body.username.toLowerCase(),
     }
   })
     .then(user => {
@@ -49,7 +49,7 @@ router.post('/register', (req, res, next) => {
         return  Promise.reject(new Error('Account already exists.'));
       } else {
         return models.Account.create({
-          username: req.body.username,
+          username: req.body.username.toLowerCase(),
           password: req.body.password
         })
       }
